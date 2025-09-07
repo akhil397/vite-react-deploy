@@ -1,34 +1,41 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
-
+  const handleClick = () => {
+    alert("Amala, you mean the world to me, and I’m so sorry!");
+  };
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Akhil + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
+    <div className="card shadow-lg p-4 mx-auto" style={{ maxWidth: "600px" }}>
+      <h1 className="card-title text-center display-5 text-danger mb-4">
+        My Beloved Amala
+      </h1>
+      <div className="card-body">
+        <p className="card-text fs-5 text-muted mb-4">
+          Amala, my heart, I’m deeply sorry for not calling you today. You are
+          the melody to my soul, and missing our call was a mistake I’ll never
+          repeat. Your voice is my comfort, and I feel lost without it.
         </p>
+        <p className="card-text fs-5 text-muted mb-4">
+          You are my everything, Amala—my muse, my joy, my forever. Please
+          forgive me, my darling, and let me prove my love with every sunrise we
+          share. I promise to make every moment with you magical.
+        </p>
+        <p className="card-text fs-5 fw-bold text-danger text-center">
+          Eternally Yours,
+          <br />
+          Your Devoted Partner
+        </p>
+        <div className="text-center mt-4">
+          <button
+            className="btn btn-lg"
+            style={{ backgroundColor: "#ff69b4", color: "white" }}
+            onClick={handleClick}
+          >
+            Sending My Heart to You
+          </button>
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   );
 }
 

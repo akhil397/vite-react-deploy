@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./App.css";
 
 function App() {
@@ -198,8 +198,68 @@ function App() {
   const [musicEnabled, setMusicEnabled] = useState(true);
   const [theme, setTheme] = useState("light");
   const [shuffledOptions, setShuffledOptions] = useState([]);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
-  // ===== EFFECTS =====
+  // ===== TEXT TO SPEECH FUNCTION =====
+  const speak = useCallback((text) => {
+    if (!text) return;
+
+    // Cancel any ongoing speech
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Configure voice settings
+    utterance.lang = "en-US";
+    utterance.rate = 0.9; // Slightly slower for clarity
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    // Get available voices and try to select a good English voice
+    if (window.speechSynthesis) {
+      const voices = window.speechSynthesis.getVoices();
+      const englishVoice = voices.find(
+        (voice) => voice.lang.includes("en-US") || voice.lang.includes("en-GB"),
+      );
+      if (englishVoice) {
+        utterance.voice = englishVoice;
+      }
+    }
+
+    // Handle events
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    // Speak the text
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
+  // Load voices when they change
+  useEffect(() => {
+    if (window.speechSynthesis) {
+      // Load voices
+      window.speechSynthesis.getVoices();
+
+      // For Chrome, voices might load asynchronously
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+  }, []);
+
+  // Cleanup speech on unmount
+  useEffect(() => {
+    return () => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  // ===== OTHER EFFECTS =====
   useEffect(() => {
     const savedUser = localStorage.getItem("lastUser");
     if (savedUser) {
@@ -302,7 +362,7 @@ function App() {
 
     setCurrentLevel(level);
     setCurrentIndex(0);
-    setTimeLeft(60);
+    setTimeLeft(600);
     setAnswerArray([]);
 
     const startIdx = (level - 1) * 10;
@@ -462,7 +522,29 @@ function App() {
 
     return (
       <div className="card">
-        <h3>Level {currentLevel}</h3>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <h3>Level {currentLevel}</h3>
+          <button
+            onClick={() => speak(currentQuestion.english)}
+            style={{
+              background: "#ff9800",
+              color: "white",
+              padding: "8px 15px",
+              borderRadius: "20px",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "16px",
+            }}
+          >
+            🔊 {isSpeaking ? "Speaking..." : "Hear Sentence"}
+          </button>
+        </div>
         <p>
           ⏱ <span>{timeLeft}</span>s
         </p>
